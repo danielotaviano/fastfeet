@@ -14,6 +14,7 @@ interface ICreateUserDTO {
 interface IUserRepository {
   findByCpf(cpf: string): Promise<User | undefined>;
   createUser(data: ICreateUserDTO): Promise<User>;
+  findByEmail(email: string): Promise<User | undefined>;
 }
 
 class FakeUserRepository implements IUserRepository {
@@ -29,6 +30,11 @@ class FakeUserRepository implements IUserRepository {
 
   async findByCpf(cpf: string): Promise<User | undefined> {
     const user = this.users.find(user => user.cpf === cpf);
+    return user;
+  }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = this.users.find(user => user.email === email);
     return user;
   }
 }
@@ -53,7 +59,10 @@ class CreateUserService {
   }: IRequest): Promise<User> {
     const existingCpfUser = await this.userRepository.findByCpf(cpf);
     if (existingCpfUser)
-      throw new BadRequestError('This cpf is already in use');
+      throw new BadRequestError('This cpf is already in use', 409);
+    const existingEmailUser = await this.userRepository.findByEmail(email);
+    if (existingEmailUser)
+      throw new BadRequestError('This Email is already in use', 409);
     const user = await this.userRepository.createUser({
       cpf,
       deliveryman,
@@ -81,5 +90,22 @@ describe('CreateUserService', () => {
     await expect(createUser.execute(userInfo)).rejects.toBeInstanceOf(
       BadRequestError,
     );
+  });
+
+  it('should not be able to create a user with same email', async () => {
+    const fakeUserRepository = new FakeUserRepository();
+    const createUser = new CreateUserService(fakeUserRepository);
+    const userInfo = {
+      cpf: 'cpf',
+      deliveryman: true,
+      email: 'email@exemple.com',
+      name: 'valid name',
+      password: 'validpassword',
+    };
+    await createUser.execute(userInfo);
+
+    await expect(
+      createUser.execute({ ...userInfo, cpf: 'cpf1' }),
+    ).rejects.toBeInstanceOf(BadRequestError);
   });
 });
