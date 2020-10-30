@@ -1,6 +1,17 @@
 import BadRequestError from '../../../shared/err/BadRequestError';
 import User from '../entities/User';
 
+// Providers
+interface IHashProvider {
+  createHash(payload: string): Promise<string>;
+}
+
+class FakeHashProvider implements IHashProvider {
+  async createHash(payload: string): Promise<string> {
+    return 'hash' + payload;
+  }
+}
+
 // DTOS
 interface ICreateUserDTO {
   name: string;
@@ -49,7 +60,11 @@ interface IRequest {
 }
 
 class CreateUserService {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private hashProvider: IHashProvider,
+  ) {}
+
   async execute({
     cpf,
     deliveryman,
@@ -63,21 +78,28 @@ class CreateUserService {
     const existingEmailUser = await this.userRepository.findByEmail(email);
     if (existingEmailUser)
       throw new BadRequestError('This Email is already in use', 409);
+
+    const hashedPassword = await this.hashProvider.createHash(password);
     const user = await this.userRepository.createUser({
       cpf,
       deliveryman,
       email,
       name,
-      password,
+      password: hashedPassword,
     });
     return user;
   }
 }
-
+let fakeUserRepository: FakeUserRepository;
+let fakeHashProvider: FakeHashProvider;
+let createUser: CreateUserService;
 describe('CreateUserService', () => {
+  beforeEach(() => {
+    fakeUserRepository = new FakeUserRepository();
+    fakeHashProvider = new FakeHashProvider();
+    createUser = new CreateUserService(fakeUserRepository, fakeHashProvider);
+  });
   it('should not be able to create a user with same cpf', async () => {
-    const fakeUserRepository = new FakeUserRepository();
-    const createUser = new CreateUserService(fakeUserRepository);
     const userInfo = {
       cpf: 'sameCpf',
       deliveryman: true,
@@ -93,8 +115,6 @@ describe('CreateUserService', () => {
   });
 
   it('should not be able to create a user with same email', async () => {
-    const fakeUserRepository = new FakeUserRepository();
-    const createUser = new CreateUserService(fakeUserRepository);
     const userInfo = {
       cpf: 'cpf',
       deliveryman: true,
@@ -107,5 +127,21 @@ describe('CreateUserService', () => {
     await expect(
       createUser.execute({ ...userInfo, cpf: 'cpf1' }),
     ).rejects.toBeInstanceOf(BadRequestError);
+  });
+
+  it('should be able to create a user with a hashed password', async () => {
+    const hashCount = jest.spyOn(fakeHashProvider, 'createHash');
+    const userInfo = {
+      cpf: 'cpf',
+      deliveryman: true,
+      email: 'email@exemple.com',
+      name: 'valid name',
+      password: 'validpassword',
+    };
+
+    const user = await createUser.execute(userInfo);
+
+    expect(hashCount).toBeCalledWith(userInfo.password);
+    expect(user.password).toBe('hash' + userInfo.password);
   });
 });
