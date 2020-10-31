@@ -1,9 +1,10 @@
 import BadRequestError from '../../../shared/err/BadRequestError';
+import User from '../entities/User';
 import IUserRepository from '../repositories/IUserRepository';
 
 export default class ListAllUserService {
   constructor(private userRepository: IUserRepository) {}
-  async execute(authenticateUserId: string) {
+  async execute(authenticateUserId: string): Promise<User[]> {
     const authenticateUser = await this.userRepository.findById(
       authenticateUserId,
     );
