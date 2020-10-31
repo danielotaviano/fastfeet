@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "@types/jest": "^26.0.15",
-    "jest": "^26.6.1"
+    "@types/uuid": "^8.3.0",
+    "jest": "^26.6.1",
+    "uuid": "^8.3.1"
   }
 }
