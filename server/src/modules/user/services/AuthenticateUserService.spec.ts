@@ -4,9 +4,7 @@ import FakeJwtProvider from '../providers/JwtProvider/fakes/FakeJwtProvider';
 import FakeUserRepository from '../repositories/fakes/FakeUserRepository';
 
 import AuthenticateUserService from './AuthenticateUserService';
-import CreateUserService from './CreateUserSerrvice';
-
-// service
+import CreateUserService from './CreateUserService';
 
 describe('Authenticate a user', () => {
   let createUserService: CreateUserService;

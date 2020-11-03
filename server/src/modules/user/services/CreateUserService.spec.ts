@@ -1,7 +1,7 @@
 import BadRequestError from '../../../shared/err/BadRequestError';
 import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 import FakeUserRepository from '../repositories/fakes/FakeUserRepository';
-import CreateUserService from './CreateUserSerrvice';
+import CreateUserService from './CreateUserService';
 
 describe('CreateUserService', () => {
   let fakeUserRepository: FakeUserRepository;
