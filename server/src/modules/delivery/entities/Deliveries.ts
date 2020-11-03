@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 export class Deliveries {
   id: string;
   deliveryman_id: string;
@@ -13,4 +14,8 @@ export class Deliveries {
   end_date: Date;
   created_at: Date;
   updated_at: Date;
+
+  constructor() {
+    this.id = uuid();
+  }
 }
