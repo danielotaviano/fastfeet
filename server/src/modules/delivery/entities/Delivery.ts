@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-export class Deliveries {
+export default class Delivery {
   id: string;
   deliveryman_id: string;
   product: string;
