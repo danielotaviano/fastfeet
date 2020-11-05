@@ -23,6 +23,16 @@ export default class FakeDeliveryRepository implements IDeliveryRepository {
     return delivery;
   }
 
+  async remove(delivery_id: string): Promise<Delivery> {
+    const findIndex = this.deliveries.findIndex(
+      delivery => delivery.id === delivery_id,
+    );
+
+    const delivery = this.deliveries.splice(findIndex, 1);
+
+    return delivery[0];
+  }
+
   async save(delivery: Delivery): Promise<Delivery> {
     const findIndex = this.deliveries.findIndex(
       oldDelivery => oldDelivery.id === delivery.id,
