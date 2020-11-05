@@ -1,5 +1,6 @@
 import BadRequestError from '../../../shared/err/BadRequestError';
 import IUserRepository from '../../user/repositories/IUserRepository';
+import Delivery from '../entities/Delivery';
 import IDeliveryRepository from '../repositories/IDeliveryRepository';
 
 interface IRequest {
@@ -26,7 +27,7 @@ export default class CreateDeliveryService {
     postal_code,
     product,
     state,
-  }: IRequest) {
+  }: IRequest): Promise<Delivery> {
     const deliveryman = await this.userRepository.findById(deliveryman_id);
     if (!deliveryman) {
       throw new BadRequestError('This delivery man does not exist', 404);

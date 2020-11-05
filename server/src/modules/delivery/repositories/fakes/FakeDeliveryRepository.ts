@@ -13,4 +13,8 @@ export default class FakeDeliveryRepository implements IDeliveryRepository {
 
     return delivery;
   }
+
+  async listAll(): Promise<Delivery[]> {
+    return this.deliveries;
+  }
 }
