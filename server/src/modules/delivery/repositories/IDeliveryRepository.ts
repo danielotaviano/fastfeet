@@ -7,4 +7,5 @@ export default interface IDeliveryRepository {
   findById(id: string): Promise<Delivery | undefined>;
   remove(delivery_id: string): Promise<Delivery>;
   save(delivery: Delivery): Promise<Delivery>;
+  listByUserId(user_id: string): Promise<Delivery[]>;
 }

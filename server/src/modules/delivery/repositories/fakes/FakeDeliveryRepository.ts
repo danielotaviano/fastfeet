@@ -41,4 +41,12 @@ export default class FakeDeliveryRepository implements IDeliveryRepository {
     this.deliveries[findIndex] = delivery;
     return delivery;
   }
+
+  async listByUserId(user_id: string): Promise<Delivery[]> {
+    const list = this.deliveries.filter(
+      delivery => user_id === delivery.deliveryman_id,
+    );
+
+    return list;
+  }
 }
