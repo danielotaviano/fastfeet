@@ -7,6 +7,7 @@ describe('CreateUserService', () => {
   let fakeUserRepository: FakeUserRepository;
   let fakeHashProvider: FakeHashProvider;
   let createUser: CreateUserService;
+
   beforeEach(() => {
     fakeUserRepository = new FakeUserRepository();
     fakeHashProvider = new FakeHashProvider();
